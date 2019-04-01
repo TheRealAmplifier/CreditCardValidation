@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title>Testje voor validatie creditcard</title>
+  </head>
+  <body>
+
+      <form class="ccard-check" id="form" method="post">
+        <fieldset style="margin-bottom:20px">
+          <label for="ccard">Creditcard number</label>
+          <input type="text" name="ccard-number" value="">
+        </fieldset>
+        <fieldset style="margin-bottom:20px">
+          <label for="ccard">Expiration Date Day</label>
+          <input type="text" name="ccard-date-day" value="">
+          <input type="text" name="ccard-date-month" value="">
+        </fieldset>
+        <fieldset style="margin-bottom:20px">
+          <label for="ccard">security code</label>
+          <input type="text" name="ccard-code" value="">
+        </fieldset>
+
+        <input type="submit" name="" value="check card!">
+      </form>
+
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+    <script type="text/javascript" src="node_modules/creditcard.js/dist/creditcard.min.js"></script>
+    <script>
+
+      jQuery.fn.checkCreditCard = function(ccardNumber, ccardDateDay, ccardDateMonth, ccardCode) {
+
+        var ccardNumber = $('input[name="ccard-number"]').val();
+        var ccardDateDay = $('input[name="ccard-date-day"]').val();
+        var ccardDateMonth = $('input[name="ccard-date-month"]').val();
+        var ccardCode = $('input[name="ccard-code"]').val();
+
+        var obj = new CreditCard();
+
+        if ( ccardNumber.length > 1 ) {
+          var cardIsValid = obj.isValid(ccardNumber);
+
+          if ( cardIsValid && ccardDateDay.length > 1 && ccardDateMonth.length > 1 ) {
+            var validExpirationDate = obj.isExpirationDateValid(ccardDateDay, ccardDateMonth);
+
+            if( validExpirationDate && ccardCode.length > 1 ) {
+              var validCode = obj.isSecurityCodeValid(ccardNumber, ccardCode); // returns true
+
+              if( validCode ) {
+                alert(`All fields seem to be correct, good job!`);
+                console.log(`let see, we have a ${ccardNumber}, ${ccardDateDay}, ${ccardDateMonth} and ${ccardCode}`);
+                console.log( obj.getCreditCardNameByNumber(ccardNumber) );
+              }
+            }
+          } else if ( !cardIsValid && !ccardDateDay.length <= 0 && ccardDateMonth.length <= 0 ) {
+            console.log(`card is not valid, day is empty, but month is not`);
+          } else if ( !cardIsValid && ccardDateDay.length <= 0 && !ccardDateMonth.length <= 0 ) {
+            console.log(`card is not valid, day is not empty, but month is`);
+          } else if ( cardIsValid && ccardDateDay.length <= 0 && !ccardDateMonth.length <= 0 ) {
+            console.log(`card is valid, day is not empty, but month is`);
+          } else {
+            console.log(`input invalid`);
+          }
+        } else {
+          console.log(`card is empty`);
+        }
+      }
+
+
+      // form handling
+      jQuery( "#form" ).submit(function( event ) {
+        event.preventDefault();
+
+        var check = jQuery( "#form" ).checkCreditCard();
+      });
+
+    </script>
+
+  </body>
+</html>
